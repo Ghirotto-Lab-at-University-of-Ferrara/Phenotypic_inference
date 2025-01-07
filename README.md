@@ -50,9 +50,9 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
 
 **2. Phenotypic prediction and plot results for the three phenotypic traits - eye, hair and skin colours - (function 2 or 3):**
 	
-  a1) uses as input the file generated in the hirisplex youbsite (GL - function 2);
+  a1) uses as input the file generated in the hirisplex webbsite (GL - function 2);
 
-  a2) uses as input the file generated in the hirisplex youbsite (direct call - function 3).
+  a2) uses as input the file generated in the hirisplex website (direct call - function 3).
 
 **Files required (the files available in this repository are for the hg19 genome reference. If you use a different genome reference you need to edit these files):**
 -------------------------------------------------------------------------------------
@@ -79,7 +79,7 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
  -output_folder                      OUTPATH: path to the output folder
 ```
 
-After run function 1, you have a csv file that can be used as input in the hirisplex youbsite. After you upload the csv in the hirisplex youbsite and process the data (data processing will take more or less 20 minutes), the csv file with the results will be automatically download into your computer. You will use this file to run function 2 or 3 (depending on your data type) that will do the phenotypic prediction for eye, hair and skin colours and will give you the final results as a csv file and in pdf format with three plots.
+After run function 1, you have a csv file that can be used as input in the hirisplex website. After you upload the csv in the hirisplex website and process the data (data processing will take more or less 20 minutes), the csv file with the results will be automatically downloaded into your computer. You will use this file to run function 2 or 3 (depending on your data type) that will do the phenotypic prediction for eye, hair, and skin colours, and will give you the final results as a csv file and in pdf format with three plots.
 
 **Example:**
 -------------------------------------------------------------------------------------

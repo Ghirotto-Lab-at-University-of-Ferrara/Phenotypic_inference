@@ -17,20 +17,7 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
   * ggplot2
   * cowplot
   * ggrepel
-  * matrixStats
-  * tibble
-  * tidyr
-  * dplyr
-  * ggplot2
-  * cowplot
-  * ggrepel
-  * matrixStats
-  * tibble
-  * tidyr
-  * dplyr
-  * ggplot2
-  * cowplot
-  * ggrepel
+
 
 **This pipeline is divided in two main parts that need to be run separately:**
 -------------------------------------------------------------------------------------

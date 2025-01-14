@@ -33,11 +33,12 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
   d) check if indel position is covered. If yes, run Varscan;
 	
   e) calculate genotype likelihood for the covered positions;
+  
   f) convert GL/imputed genotypes to the hirisplex input format.
 
 **2. Phenotypic prediction and plot results for the three phenotypic traits - eye, hair and skin colours - (function 2 or 3):**
 	
-  a1) uses as input the file generated in the hirisplex webbsite (GL - function 2);
+  a1) uses as input the file generated in the hirisplex website (GL - function 2);
 
   a2) uses as input the file generated in the hirisplex website (direct call - function 3).
 
@@ -86,3 +87,14 @@ After run function 1, you have a csv file that can be used as input in the hiris
 ./global_test_help.sh -prog_func 3 -hirisplex_out Result.csv
 ```
 
+**Output Example:**
+-------------------------------------------------------------------------------------
+
+```
+Output GL
+```
+
+
+```
+Output Direct Call
+```

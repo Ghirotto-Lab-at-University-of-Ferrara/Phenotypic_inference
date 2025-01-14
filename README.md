@@ -22,7 +22,7 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
 **This pipeline is divided in two main parts that need to be run separately:**
 -------------------------------------------------------------------------------------
 
-**1. Convert BAM file to the input required by the hirisplex-System (function 1):**
+**1. Convert BAM file to the input required by the hirisplex-System (function 1 or 2):**
 
   a) run samtools mpileup for the 41 hirisplex positions;
   
@@ -36,11 +36,11 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
   
   f) convert GL/imputed genotypes to the hirisplex input format.
 
-**2. Phenotypic prediction and plot results for the three phenotypic traits - eye, hair and skin colours - (function 2 or 3):**
+**2. Phenotypic prediction and plot results for the three phenotypic traits - eye, hair and skin colours - (function 3 or 4):**
 	
-  a1) uses as input the file generated in the hirisplex website (GL - function 2);
+  a1) uses as input the file generated in the hirisplex website (GL - function 3);
 
-  a2) uses as input the file generated in the hirisplex website (direct call - function 3).
+  a2) uses as input the file generated in the hirisplex website (direct call - function 4).
 
 **Files required (the files available in this repository are for the hg19 genome reference. If you use a different genome reference you need to edit these files):**
 -------------------------------------------------------------------------------------

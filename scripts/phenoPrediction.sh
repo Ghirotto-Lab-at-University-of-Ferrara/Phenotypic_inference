@@ -362,7 +362,7 @@ if [[ $prog_func == "3" ]]; then
   cd $output_folder/$id
 
   Rscript --vanilla $scriptsWD/phenotypicPrediction.R $id $hirisplex_out
-  #Rscript --vanilla $scriptsWD/plotPhenoGL.R $id
+  Rscript --vanilla $scriptsWD/plotPhenoGL.R $id
 
 fi
 
@@ -377,7 +377,7 @@ if [[ $prog_func == "4" ]]; then
   cd $output_folder/$id
 
   Rscript --vanilla $scriptsWD/phenotypicPrediction.R $id $hirisplex_out
-  #Rscript --vanilla $scriptsWD/plotPhenoDC.R $id
+  Rscript --vanilla $scriptsWD/plotPhenoDC.R $id
 
 fi
 

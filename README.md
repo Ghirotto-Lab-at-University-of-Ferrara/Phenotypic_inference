@@ -51,7 +51,7 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
 **Usage:**
 -------------------------------------------------------------------------------------
 ```
-./global_test.sh -ref /PATH/TO/GENOME_REF -pos /PATH/TO/positions_hirisplex-s_hs37d5.list -bam /PATH/TO/INPUT/BAM -id SAMPLE_ID -prog_func INT -impute /PATH/TO/INPUT/IMPUTED/VCF-BCF -hiris_strand_imputed /PATH/TO/hiris_strand.list -indel /PATH/TO/indel_hs37d5.list -allele_rs /PATH/TO/Allele_rs_hs37d5.csv -hirisplex_out /PATH/TO/HIRISPLEX/OUTPUT/FILE -output_folder /PATH/TO/OUTPUT/FOLDER
+./phenoPrediction.sh -ref /PATH/TO/GENOME_REF -pos /PATH/TO/positions_hirisplex-s_hs37d5.list -bam /PATH/TO/INPUT/BAM -id SAMPLE_ID -prog_func INT -impute /PATH/TO/INPUT/IMPUTED/VCF-BCF -hiris_strand_imputed /PATH/TO/hiris_strand.list -indel /PATH/TO/indel_hs37d5.list -allele_rs /PATH/TO/Allele_rs_hs37d5.csv -hirisplex_out /PATH/TO/HIRISPLEX/OUTPUT/FILE -output_folder /PATH/TO/OUTPUT/FOLDER
  
  -h,--help                           display this message
  -ref                                REFPATH: path to the reference genome
@@ -74,17 +74,20 @@ After run function 1, you have a csv file that can be used as input in the hiris
 
 **Function 1:**
 ```
-./global_test_help.sh -ref ref.fasta -pos positions_hirisplex-s_hs37d5.list -bam sample.bam -id sample_ID -prog_func 1 -impute imputed.bcf  -hiris_strand_imputed hiris_strand.list -indel indel_hs37d5.list -allele_rs Allele_rs_hs37d5.csv -hirisplex_out 0 -output_folder output
+./phenoPrediction.sh -ref ref.fasta -pos positions_hirisplex-s_hs37d5.list -bam sample.bam -id sample_ID -prog_func 1 -impute imputed.bcf  -hiris_strand_imputed hiris_strand.list -indel indel_hs37d5.list -allele_rs Allele_rs_hs37d5.csv -output_folder output
 ```
-
 **Function 2:**
 ```
-./global_test_help.sh -ref 0 -pos 0 -bam 0 -id sample_ID -prog_func 2 -impute 0  -hiris_strand_imputed 0 -indel 0 -allele_rs 0 -hirisplex_out Result.csv -output_folder 0
+./phenoPrediction.sh -ref ref.fasta -pos positions_hirisplex-s_hs37d5.list -bam sample.bam -VCF sample.vcf.gz -id sample_ID -prog_func 2 -hiris_strand_imputed hiris_strand.list -indel indel_hs37d5.list -allele_rs Allele_rs_hs37d5.csv -output_folder output
 ```
-
 **Function 3:**
 ```
-./global_test_help.sh -prog_func 3 -hirisplex_out Result.csv
+./phenoPrediction.sh -id sample_ID -prog_func 3 -hirisplex_out Result.csv -output_folder output
+```
+
+**Function 4:**
+```
+./phenoPrediction.sh -id sample_ID -prog_func 4 -hirisplex_out Result.csv -output_folder output
 ```
 
 **Output Example:**

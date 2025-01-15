@@ -1,6 +1,13 @@
-# Phenotypic_inference
+# Phenotypic inference using ancient and modern genome data
 
 Pipeline for the inference of phenotypic traits (eye, hair and skin colours) from ancient low-coverage data.
+
+**Downloading:**
+-------------------------------------------------------------------------------------
+```
+git clone https:github.com/Ghirotto-Lab-at-University-of-Ferrara/Phenotypic_inference.git
+```
+
 
 **Requirements:**
 -------------------------------------------------------------------------------------

@@ -51,12 +51,13 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
 **Usage:**
 -------------------------------------------------------------------------------------
 ```
-./phenoPrediction.sh -ref /PATH/TO/GENOME_REF -pos /PATH/TO/positions_hirisplex-s_hs37d5.list -bam /PATH/TO/INPUT/BAM -id SAMPLE_ID -prog_func INT -impute /PATH/TO/INPUT/IMPUTED/VCF-BCF -hiris_strand_imputed /PATH/TO/hiris_strand.list -indel /PATH/TO/indel_hs37d5.list -allele_rs /PATH/TO/Allele_rs_hs37d5.csv -hirisplex_out /PATH/TO/HIRISPLEX/OUTPUT/FILE -output_folder /PATH/TO/OUTPUT/FOLDER
+./phenoPrediction.sh -ref /PATH/TO/GENOME_REF.fa -pos /PATH/TO/positions_hirisplex-s_hs37d5.list -bam /PATH/TO/INPUT/FILE.BAM -VCF /PATH/TO/INPUT/FILE.VCF -id SAMPLE_ID -prog_func INT -impute /PATH/TO/INPUT/IMPUTED/VCF-BCF -hiris_strand_imputed /PATH/TO/hiris_strand.list -indel /PATH/TO/indel_hs37d5.list -allele_rs /PATH/TO/Allele_rs_hs37d5.csv -hirisplex_out /PATH/TO/HIRISPLEX/OUTPUT/FILE -output_folder /PATH/TO/OUTPUT/FOLDER
  
  -h,--help                           display this message
  -ref                                REFPATH: path to the reference genome
  -pos                                POSPATH: path to the list Hirisplex positions
  -bam                                BAMPATH: path to the BAM file
+ -VCF                                VCFPATH: path to the VCF file
  -id                                 ID: Sample ID
  -prog_func                          PROGFUNC: 1-GLs Computation; 2-Prediction with GLs; 3-Prediction with direct calls
  -impute                             IMPUTEPATH: path to the VCF/BCF for imputed missing Hirisplex positions
@@ -67,9 +68,9 @@ Pipeline for the inference of phenotypic traits (eye, hair and skin colours) fro
  -output_folder                      OUTPATH: path to the output folder
 ```
 
-After run function 1, you have a csv file that can be used as input in the hirisplex website. After you upload the csv in the hirisplex website and process the data (data processing will take more or less 20 minutes), the csv file with the results will be automatically downloaded into your computer. You will use this file to run function 2 or 3 (depending on your data type) that will do the phenotypic prediction for eye, hair, and skin colours, and will give you the final results as a csv file and in pdf format with three plots.
+After run function 1 or 2, you have a csv file that can be used as input in the hirisplex website. After you upload the file.csv in the hirisplex website and process the data (data processing will take more or less 20 minutes), the csv file with the results will be automatically downloaded into your computer. You will use this file to run function 3 (for GL) or 4 (Direct Call), which will perform the phenotypic prediction for eye, hair, and skin colours, and will give you the final results as a csv file and in pdf format with three plots.
 
-**Example:**
+**Examples:**
 -------------------------------------------------------------------------------------
 
 **Function 1:**

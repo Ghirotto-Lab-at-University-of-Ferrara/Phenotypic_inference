@@ -119,7 +119,7 @@ skin_colour_df <- data.frame(
   Count = as.numeric(skin_colour_counts)
 )
 
-skin_colour_level <- c("Dark to black", "Dark", "Intermediate", "Pale", "Very Pale", "Mixed with second category", "Not predicted")
+skin_colour_level <- c("Dark to black", "Dark", "Intermediate", "Pale", "Very pale", "Mixed with second category", "Not predicted")
 
 # Rinomina la colonna nel dataframe skin_colour_df
 names(skin_colour_df)[1] <- "Skin_colour"
@@ -147,7 +147,7 @@ skin_pie <- ggplot(skin_colour_df, aes(x = "", y = Count, fill = Skin_colour)) +
                                "Dark" = "#81582B",
                                "Intermediate" = "#C18747",
                                "Pale" = "#D5AD81",
-                               "Very Pale" = "#EAD6C0",
+                               "Very pale" = "#EAD6C0",
                                "Not predicted" = "#BFBFBF"),
                     name = "Skin colour") +  
   geom_label_repel(data = subset(skin_colour_df, Percent > 0),

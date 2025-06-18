@@ -54,6 +54,7 @@ git clone https:github.com/Ghirotto-Lab-at-University-of-Ferrara/Phenotypic_infe
 - hiris_strand.list
 - indel_hs37d5.list
 - Allele_rs_hs37d5.csv
+- positions_hirisplex-s_hs37d5.list
 
 **Usage:**
 -------------------------------------------------------------------------------------

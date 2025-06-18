@@ -5,8 +5,8 @@
 source /opt/miniconda3/bin/activate r-env
 module load samtools-1.11
 module load bcftools-1.11
-varscan=/jarvis/scratch/usr/perretti/software/VarScan.v2.3.9.jar
-scriptsWD=/jarvis/scratch/usr/santos/pheno_lowCov/version_github/
+varscan=/path/to/VarScan.jar
+scriptsWD=/path/to/R_scripts/
 
 ######################################################
 

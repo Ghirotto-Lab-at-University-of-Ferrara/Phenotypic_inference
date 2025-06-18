@@ -17,7 +17,7 @@ Hps_SNPs<-allele_rs
 final_csv_df <- data.frame(matrix(ncol = 42, nrow = 1))
 colnames(final_csv_df)[1] = "sampleid"
 colnames(final_csv_df)[2:42]<-Hps_SNPs$Rs_allele
-final_csv_df$sample_id <- sampleid
+final_csv_df$sampleid <- sampleid
 
 ###### INSERT INDEL GENOTYPE (0/1/2/NA) ######
 final_csv_df$rs312262906_A <- geno_indel

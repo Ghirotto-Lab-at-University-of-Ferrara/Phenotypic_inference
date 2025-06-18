@@ -1,32 +1,12 @@
 #!/bin/bash
 
-######################## ARGS ########################
-
-ref=${1}                        #Reference genome
-pos=${2}                        #list Hirisplex positions
-bam=${3}                        #BAM file
-VCF=${4}                        #VCF file
-id=${5}                         #Sample ID
-prog_func=${6}                  #Program Function: 1-GLs Computation; 2-Prediction with GLs; 3-Prediction with direct calls
-impute=${7}                     #VCF/BCF for imputed missing Hirisplex positions
-hiris_strand_imputed=${8}       #Informative alleles Hirisplex (check strand for Imputed VCF/BCF file)          
-indel=${9}                      #INDEL position with 10bp upstream and downstream for VarScan call
-allele_rs=${10}                  #Informative alleles Hirisplex (check strand for Rscript)
-hirisplex_out=${11}             #Hirisplex output file
-plot=${12}                      #Create plot for phenotype prediction
-output_folder=${13}             #Path to output folder
-
-######################################################
-
-
-
 ######################## MODULES #####################
 
 source /opt/miniconda3/bin/activate r-env
 module load samtools-1.11
 module load bcftools-1.11
 varscan=/jarvis/scratch/usr/perretti/software/VarScan.v2.3.9.jar
-scriptsWD=/jarvis/scratch/usr/santos/pheno_lowCov
+scriptsWD=/jarvis/scratch/usr/santos/pheno_lowCov/version_github/
 
 ######################################################
 
@@ -38,15 +18,15 @@ while test $# -gt 0; do
                         echo " "
                         echo "Command Line Arguments:"
                         echo " "
-                        echo "Example: ./global_test.sh -ref /PATH/TO/GENOME_REF -pos /PATH/TO/positions_hirisplex-s_hs37d5.list -bam /PATH/TO/INPUT/BAM -VCF /PATH/TO/INPUT/VCF -id SAMPLE_ID -prog_func INT -impute /PATH/TO/INPUT/IMPUTED/VCF-BCF -hiris_strand_imputed /PATH/TO/hiris_strand.list -indel /PATH/TO/indel_hs37d5.list -allele_rs /PATH/TO/Allele_rs_hs37d5.csv -hirisplex_out /PATH/TO/HIRISPLEX/OUTPUT/FILE -output_folder /PATH/TO/OUTPUT/FOLDER"
+                        echo "Example: ./phenoPrediction.sh -ref /PATH/TO/GENOME_REF -pos /PATH/TO/positions_hirisplex-s_hs37d5.list -bam /PATH/TO/INPUT/BAM -VCF /PATH/TO/INPUT/VCF -id SAMPLE_ID -prog_func INT -impute /PATH/TO/INPUT/IMPUTED/VCF-BCF -hiris_strand_imputed /PATH/TO/hiris_strand.list -indel /PATH/TO/indel_hs37d5.list -allele_rs /PATH/TO/Allele_rs_hs37d5.csv -hirisplex_out /PATH/TO/HIRISPLEX/OUTPUT/FILE -output_folder /PATH/TO/OUTPUT/FOLDER"
                         echo " "                 
                         echo " -h,--help                           Display this message"
                         echo " -ref                                REFPATH: path to the reference genome"
                         echo " -pos                                POSPATH: path to the list Hirisplex positions"
                         echo " -bam                                BAMPATH: path to the BAM file"
-                        echo " -VCF                                VCFPATH: path to the VCF file"
+                        echo " -VCF                                VCFPATH: path to the VCF file (with mono- and polimorphic sites)"
                         echo " -id                                 ID: Sample ID"
-                        echo " -prog_func                          PROGFUNC: 1-GLs Computation; 2-Prediction with GLs; 3-Prediction with direct calls"
+                        echo " -prog_func                          PROGFUNC: 1-GLs Computation; 2-Direct Call Computation; 3-Prediction with GLs; 4-Prediction with direct calls"
                         echo " -impute                             IMPUTEPATH: path to the VCF/BCF for imputed missing Hirisplex positions"
                         echo " -hiris_strand_imputed               HIRISSTRANDPATH: path to the Hirisplex informative alleles list (check strand for Imputed VCF/BCF file)"
                         echo " -indel                              INDELPATH: path to the INDEL position file (10bp upstream and downstream) for VarScan call"
@@ -181,7 +161,7 @@ done
 
 ######################################################
 
-echo -e "\n--------------------------> EXECUTING CMD LINE: ./global_test.sh -ref $ref -pos $pos -bam $bam -VCF $VCF -id $id -prog_func $prog_func -impute $impute -hiris_strand_imputed $hiris_strand_imputed -indel $indel -allele_rs $allele_rs -hirisplex_out $hirisplex_out -output_folder $output_folder \n"
+echo -e "\n--------------------------> EXECUTING CMD LINE: ./phenoPrediction.sh -ref $ref -pos $pos -bam $bam -VCF $VCF -id $id -prog_func $prog_func -impute $impute -hiris_strand_imputed $hiris_strand_imputed -indel $indel -allele_rs $allele_rs -hirisplex_out $hirisplex_out -output_folder $output_folder \n"
 
 #################### PROG FUNC 1 #####################
 
@@ -327,28 +307,49 @@ if [[ $prog_func == "2" ]]; then
   mkdir -p $output_folder/$id
   cd $output_folder/$id
 
-  echo -e "--------------------------> Extract 41 Hirisplex positions using BCFtools and check strand: \n"
-
-  bcftools mpileup -Ou --gvcf 0 -R $hiris_strand_imputed -f $ref $bam | bcftools call --gvcf 0 -m -Ov - > DirectCall.vcf
-  /opt/software/ngs/angsd-0.932/htslib/bgzip DirectCall.vcf
-  /opt/software/ngs/angsd-0.932/htslib/tabix -p vcf DirectCall.vcf.gz
-  bcftools query -f '%CHROM %POS %REF %ALT [ %GT]\n' -R $hiris_strand_imputed DirectCall.vcf.gz > DirectCall.geno
-  awk 'NR==FNR{a[$1$2]=$0; next} ($1$2 in a){print $3,$4, a[$1$2]}' DirectCall.geno $hiris_strand_imputed | awk '{print $3,$4,$5,$6,$7,$1,$2}' | awk '{if ($4 == $7) {print $5, $6} else if ($3 == $7) {if ($5 == "0/0") {print "1/1", $6} else if ($5 == "1/1") {print "0/0", $6} else {print $5, $6}} else {print $5, $6}}' | paste DirectCall.geno - | awk '{print $1, $2, $3, $4, $6, $7}' | sed -e "s/0\/0/0/g; s/0\/1/1/g; s/1\/0/1/g; s/1\/1/2/g" > DirectCall_final.geno
-
-  echo -e "--------------------------> run VarScan for INDEL position! \n"
-  samtools mpileup -f $ref -l $indel -B $bam | java -Xmx20g -jar $varscan mpileup2indel --min-coverage 2 --min-reads2 2 --output-vcf > "$id"_VarScan.vcf
-  ref_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $5}' )
-  alt_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $6}' )
-  if [[ $ref_DP_indel -eq '' ]]; then 
-    geno_indel=0
-  else
-    if [[ $ref_DP_indel -eq $alt_DP_indel ]]; then
-      geno_indel=1
+  
+  if [[ $VCF == "0" ]]; then
+    echo -e "--------------------------> Extract 41 Hirisplex positions using BCFtools and check strand: \n"
+    bcftools mpileup -Ou --gvcf 0 -R $hiris_strand_imputed -f $ref $bam | bcftools call --gvcf 0 -m -Ov - > DirectCall.vcf
+    /opt/software/ngs/angsd-0.932/htslib/bgzip DirectCall.vcf
+    /opt/software/ngs/angsd-0.932/htslib/tabix -p vcf DirectCall.vcf.gz
+    bcftools query -f '%CHROM %POS %REF %ALT [ %GT]\n' -R $hiris_strand_imputed DirectCall.vcf.gz > DirectCall.geno
+    awk 'NR==FNR{a[$1$2]=$0; next} ($1$2 in a){print $3,$4, a[$1$2]}' DirectCall.geno $hiris_strand_imputed | awk '{print $3,$4,$5,$6,$7,$1,$2}' | awk '{if ($4 == $7) {print $5, $6} else if ($3 == $7) {if ($5 == "0/0") {print "1/1", $6} else if ($5 == "1/1") {print "0/0", $6} else {print $5, $6}} else {print $5, $6}}' | paste DirectCall.geno - | awk '{print $1, $2, $3, $4, $6, $7}' | sed -e "s/0\/0/0/g; s/0\/1/1/g; s/1\/0/1/g; s/1\/1/2/g; s/.\/./NA/g" > DirectCall_final.geno
+    
+    echo -e "--------------------------> run VarScan for INDEL position! \n"
+    samtools mpileup -f $ref -l $indel -B $bam | java -Xmx20g -jar $varscan mpileup2indel --min-coverage 2 --min-reads2 2 --output-vcf > "$id"_VarScan.vcf
+    ref_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $5}' )
+    alt_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $6}' )
+    if [[ $ref_DP_indel -eq '' ]]; then 
+      geno_indel=0
     else
-      geno_indel=2
+      if [[ $ref_DP_indel -eq $alt_DP_indel ]]; then
+        geno_indel=1
+      else
+        geno_indel=2
+      fi
     fi
+    Rscript --vanilla $scriptsWD/vcfToCsv.R $id $allele_rs $geno_indel DirectCall_final.geno
+  else
+    echo -e "--------------------------> Extract 41 Hirisplex positions from VCF file and check strand: \n"
+    bcftools query -f '%CHROM %POS %REF %ALT [ %GT]\n' -R $hiris_strand_imputed $VCF > DirectCall.geno
+    awk 'NR==FNR{a[$1$2]=$0; next} ($1$2 in a){print $3,$4, a[$1$2]}' DirectCall.geno $hiris_strand_imputed | awk '{print $3,$4,$5,$6,$7,$1,$2}' | awk '{if ($4 == $7) {print $5, $6} else if ($3 == $7) {if ($5 == "0/0") {print "1/1", $6} else if ($5 == "1/1") {print "0/0", $6} else {print $5, $6}} else {print $5, $6}}' | paste DirectCall.geno - | awk '{print $1, $2, $3, $4, $6, $7}' | sed -e "s/0\/0/0/g; s/0\/1/1/g; s/1\/0/1/g; s/1\/1/2/g; s/.\/./NA/g" > DirectCall_final.geno
+    
+    echo -e "--------------------------> run VarScan for INDEL position! \n"
+    samtools mpileup -f $ref -l $indel -B $bam | java -Xmx20g -jar $varscan mpileup2indel --min-coverage 2 --min-reads2 2 --output-vcf > "$id"_VarScan.vcf
+    ref_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $5}' )
+    alt_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $6}' )
+    if [[ $ref_DP_indel -eq '' ]]; then 
+      geno_indel=0
+    else
+      if [[ $ref_DP_indel -eq $alt_DP_indel ]]; then
+        geno_indel=1
+      else
+        geno_indel=2
+      fi
+    fi
+    Rscript --vanilla $scriptsWD/vcfToCsv.R $id $allele_rs $geno_indel DirectCall_final.geno
   fi
-  Rscript --vanilla $scriptsWD/vcfToCsv.R $id $allele_rs $geno_indel DirectCall_final.geno 
 fi
 
 ######################################################

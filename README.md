@@ -110,3 +110,8 @@ Output GL
 ```
 Output Direct Call
 ```
+
+**Citation:**
+-------------------------------------------------------------------------------------
+
+If you use this program, please cite the following publication: XXX

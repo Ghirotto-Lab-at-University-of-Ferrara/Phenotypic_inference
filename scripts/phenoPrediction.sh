@@ -5,8 +5,8 @@
 source /opt/miniconda3/bin/activate r-env
 module load samtools-1.11
 module load bcftools-1.11
-varscan=/path/to/VarScan.jar
-scriptsWD=/path/to/R_scripts/
+varscan=/jarvis/scratch/usr/perretti/software/VarScan.v2.3.9.jar
+scriptsWD=/jarvis/scratch/usr/santos/pheno_lowCov/version_github/
 
 ######################################################
 
@@ -178,34 +178,34 @@ if [[ $prog_func == "1" ]]; then
   
   # Create report QC positions
   file=$id.mpileup
+
+   echo -e "--------------------------" > QC_report.log
+   echo -e "report QC positions" >> QC_report.log
   
-  echo -e "--------------------------" > QC_report.log
-  echo -e "report QC positions" >> QC_report.log
+   # Check for positions with DP==0
+   if awk '$4 == 0' "$file" | grep -q '.'; then
   
-  # Check for positions with DP==0
-  if awk '$4 == 0' "$file" | grep -q '.'; then
+     echo -e "--> Missing positions:"  >> QC_report.log
+     awk '$4 == 0 {print "chr="$1, "pos="$2, "DP="$4; count++} END {print "Positions count:", count}' "$file" >> QC_report.log
   
-    echo -e "--> Missing positions:"  >> QC_report.log
-    awk '$4 == 0 {print "chr="$1, "pos="$2, "DP="$4; count++} END {print "Positions count:", count}' "$file" >> QC_report.log
+   else
+     echo -e "--> Missing positions: 0" >> QC_report.log
+     awk '$4 == 0 {print "chr="$1, "pos="$2, "DP="$4; count++} END {print "Positions count: 0"}' "$file" >> QC_report.log
+   fi
+   # Compute minimum DP for covered positions
+     echo -n "--> Minimum coverage: " >> QC_report.log
+     min=$(awk '$4 != 0 && (min=="" || $4 < min) {min=$4} END {print min}' "$file") >> QC_report.log
+     echo $min >> QC_report.log
   
-  else
-    echo -e "--> Missing positions: 0" >> QC_report.log
-    awk '$4 == 0 {print "chr="$1, "pos="$2, "DP="$4; count++} END {print "Positions count: 0"}' "$file" >> QC_report.log
-  fi
-  # Compute minimum DP for covered positions
-    echo -n "--> Minimum coverage: " >> QC_report.log
-    min=$(awk '$4 != 0 && (min=="" || $4 < min) {min=$4} END {print min}' "$file") >> QC_report.log
-    echo $min >> QC_report.log
+   # Report for minimum DP covered positions
+   if [ -n "$min" ]; then
+     awk -v min="$min" '$4 == min {
+       print "chr="$1, "pos="$2, "DP="$4 
+       }' "$file" | LC_ALL=C sort -t= -k2,2n >> QC_report.log
+     echo -e "Total Positions with minimum DP: $(awk -v min="$min" '$4 == min {count++} END {print count}' "$file")" >> QC_report.log
+   fi
   
-  # Report for minimum DP covered positions
-  if [ -n "$min" ]; then
-    awk -v min="$min" '$4 == min {
-      print "chr="$1, "pos="$2, "DP="$4 
-      }' "$file" | LC_ALL=C sort -t= -k2,2n >> QC_report.log
-    echo -e "Total Positions with minimum DP: $(awk -v min="$min" '$4 == min {count++} END {print count}' "$file")" >> QC_report.log
-  fi
-  
-    echo -e "--------------------------" >> QC_report.log
+     echo -e "--------------------------" >> QC_report.log
 
   # Check for missing position to be imputed and INDEL status
   QC_file=$output_folder/$id/QC_report.log
@@ -215,7 +215,27 @@ if [[ $prog_func == "1" ]]; then
   if [[ $missing_pos -gt 1 ]]; then
     if [[ $impute == "0" ]]; then 
       echo -e "\n--------------------------> Missing positions detected, check QC report! \n"
-      exit 1
+      cat $QC_file | grep "DP=0" | awk -F'=' '{print $2,$3}' | awk -F' ' '{print $1"\t"$3}' > missing_pos.list
+      awk 'NR==FNR{a[$1$2]=$0; next} ($1$2 in a){print $3,$4, a[$1$2]}' missing_pos.list $hiris_strand_imputed | awk '{print $3,$4,"NA","NA","NA",$1}' > genoMissing.geno
+      if [[ $indel_pos -eq 0 ]]; then
+        echo -e "--------------------------> INDEL position is missing, run Pipeline with INDEL as missing position: NA! \n"
+        geno_indel="NA"
+      else 
+        echo -e "--------------------------> INDEL position is covered, run VarScan and Pipeline! \n"
+        samtools mpileup -f $ref -l $indel -B $bam | java -Xmx20g -jar $varscan mpileup2indel --min-coverage 2 --min-reads2 2 --output-vcf > "$id"_VarScan.vcf
+        ref_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $5}' )
+        alt_DP_indel=$(cat "$id"_VarScan.vcf |  grep -wE "16[[:space:]]89985753" | awk '{print $10}' | awk -F':' '{print $6}' )
+        if [[ $ref_DP_indel -eq '' ]]; then 
+          geno_indel=0
+        else
+          if [[ $ref_DP_indel -eq $alt_DP_indel ]]; then
+            geno_indel=1
+          else
+            geno_indel=2
+          fi
+        fi
+      fi
+      Rscript --vanilla $scriptsWD/mpileupToCsv.R $id $file $allele_rs $geno_indel genoMissing.geno
     else 
       echo -e "\n--------------------------> Imputation file detected! \n"
       echo -e "--------------------------> Check missing positions on the QC report and extract corresponding GT from the imputed VCF/BCF \n"
